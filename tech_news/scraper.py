@@ -17,13 +17,26 @@ def fetch(url):
 
 
 class News:
-    def __init__(self, url, title, timestamp):
+    def get_url(selector):
+        url = selector.css("head link[rel=canonical]::attr(href)").get()
         self.url = url
+        
+        
+    def get_title(selector):
+        title = selector.css(".tec--article__header__title::text").get()
         self.title = title
-        self.timestamp = timestamp
-        self.sumary = sumary
-
-
+    
+    
+    def get_timestamp(selector):
+        timestamp = selector.css(".tec--timestamp__item time::attr(datetime)").get()
+        self.timstamp = timestamp
+        
+    
+    def get_summary(selector):
+        summary = selector.css("div.tec--article__body > p:nth-child(1) *::text").getall()
+        self.summary = ''.join(summary)
+    
+    
     def get_writer(selector):
         selectors = [
             ".tec--timestamp:nth-child(1) a::text",
@@ -73,6 +86,9 @@ def scrape_noticia(html_content):
     
     news = News()
     
+    news.get_url(selector)
+    news.get_title(selector)
+    news.get_timestamp(selector)
     news.get_writer(selector)
     news.get_shares_count(selector)
     news.get_comments_count(selector)
