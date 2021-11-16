@@ -1,6 +1,7 @@
 import requests
 import time
 from parsel import Selector
+import re
 
 
 # Requisito 1
@@ -17,27 +18,24 @@ def fetch(url):
 
 
 class News:
-    def get_url(selector):
+    def get_url(self, selector):
         url = selector.css("head link[rel=canonical]::attr(href)").get()
         self.url = url
-        
-        
-    def get_title(selector):
+
+    def get_title(self, selector):
         title = selector.css(".tec--article__header__title::text").get()
         self.title = title
-    
-    
-    def get_timestamp(selector):
-        timestamp = selector.css(".tec--timestamp__item time::attr(datetime)").get()
-        self.timstamp = timestamp
-        
-    
-    def get_summary(selector):
+
+    def get_timestamp(self, selector):
+        timestamp_selector = ".tec--timestamp__item time::attr(datetime)"
+        timestamp = selector.css(timestamp_selector).get()
+        self.timestamp = timestamp
+
+    def get_summary(self, selector):
         summary = selector.css("div.tec--article__body > p:nth-child(1) *::text").getall()
         self.summary = ''.join(summary)
-    
-    
-    def get_writer(selector):
+
+    def get_writer(self, selector):
         selectors = [
             ".tec--timestamp:nth-child(1) a::text",
             ".tec--author__info p:first-child::text",
@@ -54,38 +52,35 @@ class News:
         if len(writer) == 0:
             return None
         self.writer = writer[0]
-    
 
-    def get_shares_count(selector):
+    def get_shares_count(self, selector):
         shares = selector.css(".tec--toolbar div:first-child::text").get()
         if shares is None or not ("Compartilharam") in shares:
             return 0
         shares_count = re.findall(r"\s(\d*)\s(...*)", shares)
         self.shares_count = int(shares_count[0][0])
 
-
-    def get_comments_count(selector):
+    def get_comments_count(self, selector):
         comments = selector.css("#js-comments-btn::attr(data-count)").get()
         if comments is None:
             return 0
         self.comments_count = int(comments)
 
-
-    def get_sources(selector):
+    def get_sources(self, selector):
         sources = selector.css(".z--mb-16 .tec--badge::text").getall()
         self.sources = [item.strip() for item in sources]
-    
-        
-    def get_categories(selector):
+
+    def get_categories(self, selector):
         categories = selector.css("#js-categories a::text").getall()
         self.cotegories = [item.strip() for item in categories]
+
 
 # Requisito 2
 def scrape_noticia(html_content):
     selector = Selector(text=html_content)
-    
+
     news = News()
-    
+
     news.get_url(selector)
     news.get_title(selector)
     news.get_timestamp(selector)
@@ -94,7 +89,7 @@ def scrape_noticia(html_content):
     news.get_comments_count(selector)
     news.get_sources(selector)
     news.get_categories(selector)
-    
+
     return news
 
 
