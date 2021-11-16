@@ -88,6 +88,7 @@ def scrape_noticia(html_content):
     news.get_writer(selector)
     news.get_shares_count(selector)
     news.get_comments_count(selector)
+    news.get_summary(selector)
     news.get_sources(selector)
     news.get_categories(selector)
 
