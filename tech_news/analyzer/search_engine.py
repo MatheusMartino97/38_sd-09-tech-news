@@ -32,4 +32,5 @@ def search_by_source(source):
 
 # Requisito 9
 def search_by_category(category):
-    return get_formated_news({"categories": re.compile(category, re.IGNORECASE)})
+    query = {"categories": re.compile(category, re.IGNORECASE)}
+    return get_formated_news(query)
