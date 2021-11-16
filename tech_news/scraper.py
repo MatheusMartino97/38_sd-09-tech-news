@@ -1,5 +1,6 @@
 import requests
 import time
+from parsel import Selector
 
 
 # Requisito 1
@@ -15,9 +16,70 @@ def fetch(url):
         time.sleep(1)
 
 
+class News:
+    def __init__(self, url, title, timestamp):
+        self.url = url
+        self.title = title
+        self.timestamp = timestamp
+        self.sumary = sumary
+
+
+    def get_writer(selector):
+        selectors = [
+            ".tec--timestamp:nth-child(1) a::text",
+            ".tec--author__info p:first-child::text",
+            ".tec--author__info p:first-child a::text",
+        ]
+        selected = []
+        for curr_selector in selectors:
+            selected_writer = selector.css(curr_selector).get()
+            if selected_writer is not None:
+                selected.append(selected_writer.strip())
+            if selected_writer is None:
+                selected.append(None)
+        writer = [item for item in selected if item]
+        if len(writer) == 0:
+            return None
+        self.writer = writer[0]
+    
+
+    def get_shares_count(selector):
+        shares = selector.css(".tec--toolbar div:first-child::text").get()
+        if shares is None or not ("Compartilharam") in shares:
+            return 0
+        shares_count = re.findall(r"\s(\d*)\s(...*)", shares)
+        self.shares_count = int(shares_count[0][0])
+
+
+    def get_comments_count(selector):
+        comments = selector.css("#js-comments-btn::attr(data-count)").get()
+        if comments is None:
+            return 0
+        self.comments_count = int(comments)
+
+
+    def get_sources(selector):
+        sources = selector.css(".z--mb-16 .tec--badge::text").getall()
+        self.sources = [item.strip() for item in sources]
+    
+        
+    def get_categories(selector):
+        categories = selector.css("#js-categories a::text").getall()
+        self.cotegories = [item.strip() for item in categories]
+
 # Requisito 2
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    
+    news = News()
+    
+    news.get_writer(selector)
+    news.get_shares_count(selector)
+    news.get_comments_count(selector)
+    news.get_sources(selector)
+    news.get_categories(selector)
+    
+    return news
 
 
 # Requisito 3
