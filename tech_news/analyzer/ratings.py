@@ -1,24 +1,38 @@
 from tech_news.database import find_news
 import operator
+from collections import Counter
 
 
 # Requisito 10
 def top_5_news():
     news = find_news()
-    news_with_score = []
 
     if (news):
-        for each_news in news:
-            each_news["score"] = news["shares_count"] + news["comments_count"]
-            news_with_score.append(each_news)
+        for item in news:
+            item["score"] = item["shares_count"] + item["comments_count"]
 
-    sorted_list = (
-        sorted(news_with_score, key=operator.itemgetter("score"), reverse=True)
-    )
+        sorted_list = (
+            sorted(news, key=operator.itemgetter("score"), reverse=True)
+        )
 
-    return sorted_list[:5]
+        top_5_news = sorted_list[:5]
+
+        return [(item["title"], item["url"]) for item in top_5_news]
+
+    return []
 
 
 # Requisito 11
 def top_5_categories():
-    """Seu código deve vir aqui"""
+    news = find_news()
+    if (news):
+        categories = []
+
+        for item in news:
+            categories.extend(item["categories"])
+
+        categories_count = list(Counter(categories).keys())
+        categories_count.sort()
+
+        return categories_count[:5]
+    return []
