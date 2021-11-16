@@ -32,7 +32,8 @@ class News:
         self.timestamp = timestamp
 
     def get_summary(self, selector):
-        summary = selector.css("div.tec--article__body > p:nth-child(1) *::text").getall()
+        summary_selector = "div.tec--article__body > p:nth-child(1) *::text"
+        summary = selector.css(summary_selector).getall()
         self.summary = ''.join(summary)
 
     def get_writer(self, selector):
