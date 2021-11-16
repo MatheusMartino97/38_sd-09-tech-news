@@ -2,7 +2,8 @@ from tech_news.database import db
 import re
 
 
-def format_return(news):
+def get_formated_news(query):
+    news = db.news.find(query)
     return [(each_news["title"], each_news["url"]) for each_news in news]
 
 
@@ -14,25 +15,21 @@ def validate_date_regex(date):
 
 # Requisito 6
 def search_by_title(title):
-    news = db.news.find({"title": re.compile(title, re.IGNORECASE)})
-
-    return format_return(news)
+    return get_formated_news({"title": re.compile(title, re.IGNORECASE)})
 
 
 # Requisito 7
 def search_by_date(date):
     validate_date_regex(date)
 
-    news = db.news.find({"timestamp": {"$regex": date}})
-
-    return format_return(news)
+    return get_formated_news({"timestamp": {"$regex": date}})
 
 
 # Requisito 8
 def search_by_source(source):
-    """Seu código deve vir aqui"""
+    return get_formated_news({"sources": re.compile(source, re.IGNORECASE)})
 
 
 # Requisito 9
 def search_by_category(category):
-    """Seu código deve vir aqui"""
+    return get_formated_news({"categories": re.compile(category, re.IGNORECASE)})
