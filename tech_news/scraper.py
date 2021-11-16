@@ -1,6 +1,7 @@
 import requests
 import time
 
+
 # Requisito 1
 def fetch(url):
     try:
@@ -12,6 +13,7 @@ def fetch(url):
         return None
     finally:
         time.sleep(1)
+
 
 # Requisito 2
 def scrape_noticia(html_content):
